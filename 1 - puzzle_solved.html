@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Search Grid</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            padding: .375in;
+            max-width: 6in;
+            width: 6in;
+            margin: 0 auto;
+            max-height: 9in;
+            overflow: hidden;
+        }
+
+        h1 {
+            text-align: center;
+            color: #000;
+            margin-bottom: 24px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .grid {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-bottom: 15px;
+            border: 2px solid #000;
+        }
+
+        .row {
+            display: flex;
+        }
+
+        .cell {
+            display: flex;
+            flex: 1;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 1px solid #000;
+            font-size: 16px;
+            font-weight: bold;
+            color: #000;
+            padding: 8px 0;
+        }
+
+        .cell.selected-1 {
+            background: #CACACA;
+        }
+
+        .cell.selected-2 {
+            background: #BEBEBE;
+        }
+
+        .cell.number {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .words-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            justify-content: space-between;
+        }
+
+        .word-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .word-item {
+            padding: 6px 8px;
+            background: white;
+            border: 1px solid #000;
+            font-size: 13px;
+            font-weight: 600;
+            color: #000;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .word-item span {
+            font-size: 10px;
+            color: #666;
+            text-transform: none;
+        }
+
+
+        /* Print styles */
+        @media print {
+            @page {
+                size: 6in 9in;
+                margin: 0;
+                /* padding-left: 0.127in; */
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Solution Nr. 1</h1>
+        <div class="grid" id="wordSearch">
+            <div class="row">
+                <div class="cell number">&nbsp;</div>
+                <div class="cell number">1</div>
+                <div class="cell number">2</div>
+                <div class="cell number">3</div>
+                <div class="cell number">4</div>
+                <div class="cell number">5</div>
+                <div class="cell number">6</div>
+                <div class="cell number">7</div>
+                <div class="cell number">8</div>
+                <div class="cell number">9</div>
+                <div class="cell number">10</div>
+                <div class="cell number">11</div>
+                <div class="cell number">12</div>
+                <div class="cell number">13</div>
+                <div class="cell number">14</div>
+                <div class="cell number">15</div>
+            </div>
+            <div class="row">
+                <div class="cell number">1</div>
+                <div class="cell">O</div>
+                <div class="cell">R</div>
+                <div class="cell">P</div>
+                <div class="cell">H</div>
+                <div class="cell">A</div>
+                <div class="cell">C</div>
+                <div class="cell selected">M</div>
+                <div class="cell selected">A</div>
+                <div class="cell selected">L</div>
+                <div class="cell selected">W</div>
+                <div class="cell selected">A</div>
+                <div class="cell selected">R</div>
+                <div class="cell selected">E</div>
+                <div class="cell">X</div>
+                <div class="cell">M</div>
+            </div>
+            <div class="row">
+                <div class="cell number">2</div>
+                <div class="cell">E</div>
+                <div class="cell">B</div>
+                <div class="cell">G</div>
+                <div class="cell">Z</div>
+                <div class="cell">N</div>
+                <div class="cell">H</div>
+                <div class="cell">E</div>
+                <div class="cell">O</div>
+                <div class="cell selected-1">E</div>
+                <div class="cell selected-1">N</div>
+                <div class="cell selected-1">C</div>
+                <div class="cell selected-1">R</div>
+                <div class="cell selected-1">Y</div>
+                <div class="cell selected-1">P</div>
+                <div class="cell selected-1">T</div>
+            </div>
+            <div class="row">
+                <div class="cell number">3</div>
+                <div class="cell">N</div>
+                <div class="cell">A</div>
+                <div class="cell">R</div>
+                <div class="cell">H</div>
+                <div class="cell selected-2">H</div>
+                <div class="cell selected-2">A</div>
+                <div class="cell selected-2">C</div>
+                <div class="cell selected-2">K</div>
+                <div class="cell selected-2">E</div>
+                <div class="cell selected-2">R</div>
+                <div class="cell">M</div>
+                <div class="cell">L</div>
+                <div class="cell">P</div>
+                <div class="cell">E</div>
+                <div class="cell">H</div>
+            </div>
+            <div class="row">
+                <div class="cell number">4</div>
+                <div class="cell">F</div>
+                <div class="cell">G</div>
+                <div class="cell">L</div>
+                <div class="cell">Y</div>
+                <div class="cell">V</div>
+                <div class="cell">U</div>
+                <div class="cell">E</div>
+                <div class="cell">R</div>
+                <div class="cell">U</div>
+                <div class="cell">V</div>
+                <div class="cell">I</div>
+                <div class="cell">T</div>
+                <div class="cell">J</div>
+                <div class="cell selected">P</div>
+                <div class="cell">G</div>
+            </div>
+            <div class="row">
+                <div class="cell number">5</div>
+                <div class="cell">W</div>
+                <div class="cell">C</div>
+                <div class="cell">N</div>
+                <div class="cell">P</div>
+                <div class="cell selected">P</div>
+                <div class="cell">V</div>
+                <div class="cell">H</div>
+                <div class="cell">J</div>
+                <div class="cell">L</div>
+                <div class="cell">G</div>
+                <div class="cell">W</div>
+                <div class="cell">C</div>
+                <div class="cell">E</div>
+                <div class="cell selected">A</div>
+                <div class="cell">B</div>
+            </div>
+            <div class="row">
+                <div class="cell number">6</div>
+                <div class="cell">G</div>
+                <div class="cell">G</div>
+                <div class="cell">O</div>
+                <div class="cell">U</div>
+                <div class="cell selected">H</div>
+                <div class="cell">F</div>
+                <div class="cell">X</div>
+                <div class="cell">W</div>
+                <div class="cell">J</div>
+                <div class="cell">I</div>
+                <div class="cell">P</div>
+                <div class="cell">L</div>
+                <div class="cell">P</div>
+                <div class="cell selected">S</div>
+                <div class="cell">D</div>
+            </div>
+            <div class="row">
+                <div class="cell number">7</div>
+                <div class="cell">U</div>
+                <div class="cell">I</div>
+                <div class="cell">F</div>
+                <div class="cell selected">V</div>
+                <div class="cell selected">I</div>
+                <div class="cell selected">R</div>
+                <div class="cell selected">U</div>
+                <div class="cell selected">S</div>
+                <div class="cell">T</div>
+                <div class="cell">I</div>
+                <div class="cell">U</div>
+                <div class="cell">B</div>
+                <div class="cell">E</div>
+                <div class="cell selected">S</div>
+                <div class="cell selected">F</div>
+            </div>
+            <div class="row">
+                <div class="cell number">8</div>
+                <div class="cell">B</div>
+                <div class="cell">G</div>
+                <div class="cell">A</div>
+                <div class="cell">Z</div>
+                <div class="cell selected">S</div>
+                <div class="cell">S</div>
+                <div class="cell">L</div>
+                <div class="cell">X</div>
+                <div class="cell">U</div>
+                <div class="cell">M</div>
+                <div class="cell">L</div>
+                <div class="cell">X</div>
+                <div class="cell">R</div>
+                <div class="cell selected">W</div>
+                <div class="cell selected">I</div>
+            </div>
+            <div class="row">
+                <div class="cell number">9</div>
+                <div class="cell selected">N</div>
+                <div class="cell">C</div>
+                <div class="cell">I</div>
+                <div class="cell">U</div>
+                <div class="cell selected">H</div>
+                <div class="cell">G</div>
+                <div class="cell">E</div>
+                <div class="cell">T</div>
+                <div class="cell">T</div>
+                <div class="cell">U</div>
+                <div class="cell">E</div>
+                <div class="cell">O</div>
+                <div class="cell">K</div>
+                <div class="cell selected">O</div>
+                <div class="cell selected">R</div>
+            </div>
+            <div class="row">
+                <div class="cell number">10</div>
+                <div class="cell selected">E</div>
+                <div class="cell">L</div>
+                <div class="cell">F</div>
+                <div class="cell">B</div>
+                <div class="cell selected">I</div>
+                <div class="cell">F</div>
+                <div class="cell">T</div>
+                <div class="cell">D</div>
+                <div class="cell">A</div>
+                <div class="cell">G</div>
+                <div class="cell">U</div>
+                <div class="cell">Q</div>
+                <div class="cell">B</div>
+                <div class="cell selected">R</div>
+                <div class="cell selected">E</div>
+            </div>
+            <div class="row">
+                <div class="cell number">11</div>
+                <div class="cell selected">T</div>
+                <div class="cell">E</div>
+                <div class="cell">J</div>
+                <div class="cell">W</div>
+                <div class="cell selected">N</div>
+                <div class="cell">Q</div>
+                <div class="cell">N</div>
+                <div class="cell">D</div>
+                <div class="cell">O</div>
+                <div class="cell">B</div>
+                <div class="cell">V</div>
+                <div class="cell">A</div>
+                <div class="cell">Z</div>
+                <div class="cell selected">D</div>
+                <div class="cell selected">W</div>
+            </div>
+            <div class="row">
+                <div class="cell number">12</div>
+                <div class="cell selected">W</div>
+                <div class="cell">M</div>
+                <div class="cell">X</div>
+                <div class="cell">A</div>
+                <div class="cell selected">G</div>
+                <div class="cell">Z</div>
+                <div class="cell">S</div>
+                <div class="cell">J</div>
+                <div class="cell">R</div>
+                <div class="cell">Q</div>
+                <div class="cell">Y</div>
+                <div class="cell">W</div>
+                <div class="cell">N</div>
+                <div class="cell">L</div>
+                <div class="cell selected">A</div>
+            </div>
+            <div class="row">
+                <div class="cell number">13</div>
+                <div class="cell selected">O</div>
+                <div class="cell">E</div>
+                <div class="cell">L</div>
+                <div class="cell">G</div>
+                <div class="cell">T</div>
+                <div class="cell selected">S</div>
+                <div class="cell selected">E</div>
+                <div class="cell selected">R</div>
+                <div class="cell selected">V</div>
+                <div class="cell selected">E</div>
+                <div class="cell selected">R</div>
+                <div class="cell">K</div>
+                <div class="cell">J</div>
+                <div class="cell">Y</div>
+                <div class="cell selected">L</div>
+            </div>
+            <div class="row">
+                <div class="cell number">14</div>
+                <div class="cell selected">R</div>
+                <div class="cell">X</div>
+                <div class="cell">H</div>
+                <div class="cell">Y</div>
+                <div class="cell">J</div>
+                <div class="cell">I</div>
+                <div class="cell">W</div>
+                <div class="cell">G</div>
+                <div class="cell">T</div>
+                <div class="cell">O</div>
+                <div class="cell">X</div>
+                <div class="cell">R</div>
+                <div class="cell">G</div>
+                <div class="cell">X</div>
+                <div class="cell selected">L</div>
+            </div>
+            <div class="row">
+                <div class="cell number">15</div>
+                <div class="cell selected">K</div>
+                <div class="cell">Q</div>
+                <div class="cell">K</div>
+                <div class="cell">O</div>
+                <div class="cell">F</div>
+                <div class="cell">S</div>
+                <div class="cell">D</div>
+                <div class="cell">W</div>
+                <div class="cell">X</div>
+                <div class="cell">Y</div>
+                <div class="cell">H</div>
+                <div class="cell">C</div>
+                <div class="cell">A</div>
+                <div class="cell">B</div>
+                <div class="cell">V</div>
+            </div>
+        </div>
+        <div class="words-container">
+            <div class="word-column" id="column1">
+                <div class="word-item">
+                    <p>Firewall</p><span>Start (15:7) End (15:14)</span>
+                </div>
+                <div class="word-item">
+                    <p>Malware</p><span>Start (7:1) End (13:1)</span>
+                </div>
+                <div class="word-item">
+                    <p>Virus</p><span>Start (4:7) End (8:7)</span>
+                </div>
+            </div>
+            <div class="word-column" id="column2">
+                <div class="word-item">
+                    <p>Hacker</p><span>Start (5:3) End (10:3)</span>
+                </div>
+                <div class="word-item">
+                    <p>Phishing</p><span>Start (5:5) End (5:12)</span>
+                </div>
+                <div class="word-item">
+                    <p>Encrypt</p><span>Start (9:2) End (15:2)</span>
+                </div>
+            </div>
+            <div class="word-column" id="column3">
+                <div class="word-item">
+                    <p>Password</p><span>Start (14:4) End (14:11)</span>
+                </div>
+                <div class="word-item">
+                    <p>Network</p><span>Start (1:9) End (1:15)</span>
+                </div>
+                <div class="word-item">
+                    <p>Server</p><span>Start (6:13) End (11:13)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

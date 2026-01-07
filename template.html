@@ -16,22 +16,29 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-            background-image: url("background.jpg");
-            background-size: contain;
         }
 
         .container {
-            padding: 15px;
-            max-width: 100%;
+            padding: .375in;
+            max-width: 6in;
+            width: 6in;
             margin: 0 auto;
+            max-height: 9in;
+            overflow: hidden;
+        }
+
+        
+
+        .category {
+            text-align: center;
+            margin-bottom: 12px;
+            font-weight: bold;
         }
 
         h1 {
             text-align: center;
             color: #000;
-            margin-bottom: 24px;
+            margin-bottom: 12px;
             font-size: 28px;
             font-weight: bold;
         }
@@ -39,8 +46,8 @@
         .grid {
             display: flex;
             flex-direction: column;
-            width: fit-content;
-            margin: 0 auto 15px;
+            width: 100%;
+            margin-bottom: 15px;
             border: 2px solid #000;
         }
 
@@ -49,17 +56,16 @@
         }
 
         .cell {
-            width: 38px;
-            height: 38px;
             display: flex;
+            flex: 1;
             align-items: center;
             justify-content: center;
             background: white;
             border: 1px solid #000;
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
             color: #000;
-            user-select: none;
+            padding: 4px 0;
         }
 
         .cell.selected {
@@ -99,79 +105,24 @@
         /* Print styles */
         @media print {
             @page {
-                margin: 0;
-                padding: 0.4in 0;
                 size: 6in 9in;
-            }
-            
-            body {
-                background: white;
-                padding: 0;
                 margin: 0;
-                background-image: url("background.jpg");
-                background-size: contain;
-            }
-            
-            .container {
-                padding: 0;
-                max-width: 100%;
-                margin: 0;
-            }
-            
-            h1 {
-                font-size: 24px;
-                margin-bottom: 24px;
-                padding: 0;
-            }
-            
-            .grid {
-                width: 456px;
-                margin: 0 auto 15px auto;
-            }
-            
-            .cell {
-                width: 38px;
-                height: 38px;
-                font-size: 18px;
-            }
-            
-            .words-container {
-                gap: 12px;
-                margin: 12px auto 0 auto;
-                max-width: 456px;
-            }
-            
-            .word-item {
-                padding: 5px 6px;
-                font-size: 12px;
-            }
-            
-        }
-
-        @media (max-width: 600px) {
-            .cell {
-                width: 30px;
-                height: 30px;
-                font-size: 14px;
-            }
-            
-            .words-container {
-                flex-direction: column;
-                gap: 10px;
-            }
+                /* padding-left: 0.127in; */
+            }            
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Puzzle Nr. NUMBERPLACEHOLDER</h1>
-        <div class="grid" id="wordSearch">
+        <p class="category">Category: CATEGORYPLACEHOLDER</p>
+        <div class="grid">
         GRIDPLACEHOLDER
         </div>
         <div class="words-container">
-            <div class="word-column" id="column1">COLUMN1PLACEHOLDER</div>
-            <div class="word-column" id="column2">COLUMN2PLACEHOLDER</div>
-            <div class="word-column" id="column3">COLUMN3PLACEHOLDER</div>
+            <div class="word-column">COLUMN1PLACEHOLDER</div>
+            <div class="word-column">COLUMN2PLACEHOLDER</div>
+            <div class="word-column">COLUMN3PLACEHOLDER</div>
         </div>
     </div>
 </body>

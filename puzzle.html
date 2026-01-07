@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Search Grid</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url("background.jpg");
+            background-size: contain;
+        }
+
+        .container {
+            padding: .375in;
+            max-width: 6in;
+            width: 6in;
+            margin: 0 auto;
+            max-height: 9in;
+            overflow: hidden;
+            border: 1px solid black;
+        }
+
+        
+        .container p {
+            text-align: center;
+            margin-bottom: 12px;
+            font-weight: bold;
+        }
+
+        h1 {
+            text-align: center;
+            color: #000;
+            margin-bottom: 24px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .grid {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            margin-bottom: 15px;
+            border: 2px solid #000;
+        }
+
+        .row {
+            display: flex;
+        }
+
+        .cell {
+            display: flex;
+            flex: 1;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border: 1px solid #000;
+            font-size: 20px;
+            font-weight: bold;
+            color: #000;
+            padding: 8px 0;
+        }
+
+        .cell.selected {
+            background: #ccc;
+        }
+
+        .cell.number {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        .words-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            justify-content: space-between;
+        }
+
+        .word-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .word-item {
+            padding: 6px 8px;
+            background: white;
+            border: 1px solid #000;
+            font-size: 13px;
+            font-weight: 600;
+            color: #000;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        /* Print styles */
+        @media print {
+            @page {
+                size: 6in 9in;
+                margin: 0;
+                /* padding-left: 0.127in; */
+            }            
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Puzzle Nr. 1</h1>
+        <div class="grid" id="wordSearch">
+        <div class="row"><div class="cell number">&nbsp;</div><div class="cell number">1</div><div class="cell number">2</div><div class="cell number">3</div><div class="cell number">4</div><div class="cell number">5</div><div class="cell number">6</div><div class="cell number">7</div><div class="cell number">8</div><div class="cell number">9</div><div class="cell number">10</div><div class="cell number">11</div><div class="cell number">12</div></div><div class="row"><div class="cell number">1</div><div class="cell">Q</div><div class="cell">E</div><div class="cell">N</div><div class="cell">C</div><div class="cell">R</div><div class="cell">Y</div><div class="cell">P</div><div class="cell">T</div><div class="cell">L</div><div class="cell">I</div><div class="cell">H</div><div class="cell">P</div></div><div class="row"><div class="cell number">2</div><div class="cell">Q</div><div class="cell">G</div><div class="cell">K</div><div class="cell">N</div><div class="cell">H</div><div class="cell">S</div><div class="cell">E</div><div class="cell">R</div><div class="cell">V</div><div class="cell">E</div><div class="cell">R</div><div class="cell">J</div></div><div class="row"><div class="cell number">3</div><div class="cell">R</div><div class="cell">S</div><div class="cell">P</div><div class="cell">S</div><div class="cell">D</div><div class="cell">H</div><div class="cell">Z</div><div class="cell">N</div><div class="cell">X</div><div class="cell">O</div><div class="cell">Y</div><div class="cell">T</div></div><div class="row"><div class="cell number">4</div><div class="cell">P</div><div class="cell">H</div><div class="cell">I</div><div class="cell">S</div><div class="cell">H</div><div class="cell">I</div><div class="cell">N</div><div class="cell">G</div><div class="cell">O</div><div class="cell">N</div><div class="cell">P</div><div class="cell">X</div></div><div class="row"><div class="cell number">5</div><div class="cell">Z</div><div class="cell">B</div><div class="cell">B</div><div class="cell">P</div><div class="cell">A</div><div class="cell">S</div><div class="cell">S</div><div class="cell">W</div><div class="cell">O</div><div class="cell">R</div><div class="cell">D</div><div class="cell">O</div></div><div class="row"><div class="cell number">6</div><div class="cell">B</div><div class="cell">O</div><div class="cell">D</div><div class="cell">D</div><div class="cell">F</div><div class="cell">I</div><div class="cell">R</div><div class="cell">E</div><div class="cell">W</div><div class="cell">A</div><div class="cell">L</div><div class="cell">L</div></div><div class="row"><div class="cell number">7</div><div class="cell">R</div><div class="cell">R</div><div class="cell">P</div><div class="cell">Z</div><div class="cell">V</div><div class="cell">I</div><div class="cell">R</div><div class="cell">U</div><div class="cell">S</div><div class="cell">B</div><div class="cell">N</div><div class="cell">E</div></div><div class="row"><div class="cell number">8</div><div class="cell">H</div><div class="cell">C</div><div class="cell">A</div><div class="cell">C</div><div class="cell">R</div><div class="cell">C</div><div class="cell">M</div><div class="cell">W</div><div class="cell">C</div><div class="cell">O</div><div class="cell">K</div><div class="cell">R</div></div><div class="row"><div class="cell number">9</div><div class="cell">I</div><div class="cell">B</div><div class="cell">H</div><div class="cell">D</div><div class="cell">N</div><div class="cell">E</div><div class="cell">T</div><div class="cell">W</div><div class="cell">O</div><div class="cell">R</div><div class="cell">K</div><div class="cell">W</div></div><div class="row"><div class="cell number">10</div><div class="cell">V</div><div class="cell">F</div><div class="cell">M</div><div class="cell">B</div><div class="cell">M</div><div class="cell">A</div><div class="cell">L</div><div class="cell">W</div><div class="cell">A</div><div class="cell">R</div><div class="cell">E</div><div class="cell">R</div></div><div class="row"><div class="cell number">11</div><div class="cell">P</div><div class="cell">V</div><div class="cell">W</div><div class="cell">S</div><div class="cell">W</div><div class="cell">L</div><div class="cell">L</div><div class="cell">I</div><div class="cell">D</div><div class="cell">M</div><div class="cell">E</div><div class="cell">B</div></div><div class="row"><div class="cell number">12</div><div class="cell">E</div><div class="cell">V</div><div class="cell">K</div><div class="cell">F</div><div class="cell">H</div><div class="cell">W</div><div class="cell">H</div><div class="cell">A</div><div class="cell">C</div><div class="cell">K</div><div class="cell">E</div><div class="cell">R</div></div>
+        </div>
+        <div class="words-container">
+            <div class="word-column" id="column1"><div class="word-item">Firewall</div><div class="word-item"> Malware</div><div class="word-item"> Virus</div></div>
+            <div class="word-column" id="column2"><div class="word-item"> Hacker</div><div class="word-item"> Phishing</div><div class="word-item"> Encrypt</div></div>
+            <div class="word-column" id="column3"><div class="word-item"> Password</div><div class="word-item"> Network</div><div class="word-item"> Server</div></div>
+        </div>
+    </div>
+</body>
+</html>
