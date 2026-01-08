@@ -1,6 +1,5 @@
 IT
 cars
 *.pdf
-fishing
-bible
-test
+*/**/output
+*/**/formatted_words

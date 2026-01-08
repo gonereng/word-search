@@ -244,6 +244,17 @@ def create_single_page(page):
     with open(os.path.join(category_name, "output", f"{page} - {html_result_file_name}"), 'w') as file:
         file.write(html_sol_template)
 
+def initialize(category_name):
+    Path(f"./{category_name}/finished").mkdir(parents=True, exist_ok=True)
+    Path(f"./{category_name}/words").mkdir(parents=True, exist_ok=True)
+    Path(f"./{category_name}/formatted_words").mkdir(parents=True, exist_ok=True)
+    Path(f"./{category_name}/output").mkdir(parents=True, exist_ok=True)
+
+    # Remove duplicates per file
+    for file in words_files:
+        filter_and_deduplicate_words(file, os.path.join(category_name, "formatted_words", os.path.basename(file)))
+    return glob.glob(os.path.join(category_name,"formatted_words","*.*"))
+
 category_name = "test"
 html_file_name = "puzzle.html"
 html_result_file_name = "puzzle_solved.html"
@@ -252,11 +263,8 @@ words_files = glob.glob(os.path.join(category_name,"words","*.*"))
 
 if __name__ == "__main__":
 
-    # Remove duplicates per file
-    for file in words_files:
-        filter_and_deduplicate_words(file, os.path.join(category_name, "formatted_words", os.path.basename(file)))
-    formatted_words_files = glob.glob(os.path.join(category_name,"formatted_words","*.*"))
-
+    
+    formatted_words_files = initialize(category_name)
 
     page = 0
     for words_file in formatted_words_files:
@@ -276,7 +284,7 @@ if __name__ == "__main__":
                 puzzle.size = 15
                 puzzle.directions = "E,S,NE,SE"
                 # Read in the CSV file
-                if (len(puzzle.placed_words.items) != len(puzzle.words.items)):
+                while (len(puzzle.placed_words.items) < len(puzzle.words.items)):
                     if current_word_number < words_len - 1:
                         for unplaced_word in puzzle.unplaced_words.items:
                             unplaced_word_text = unplaced_word.text.title()
