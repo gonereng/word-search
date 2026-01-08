@@ -177,23 +177,86 @@ def convert_non_puzzles(html_file, output_file):
         print(f"Error during conversion: {e}")
         sys.exit(1)
 
+def create_single_page(page):
+    # open template files
+    html_template = open('template.html', 'r').read()
+    html_solution_template = open('template_solution.html', 'r').read()
 
+    grid = ""
+    grid_solution = ""            
+
+    grid += '<div class="row"><div class="cell number">&nbsp;</div>'
+    grid_solution += '<div class="row"><div class="cell number">&nbsp;</div>'
+    for i in range(15):
+        grid += F'<div class="cell number">{i + 1}</div>'
+        grid_solution += f'<div class="cell number">{i + 1}</div>'
+    grid += '</div>'
+    grid_solution += '</div>'
+    for i, row in enumerate(puzzle.cropped_puzzle, start=0):
+        grid += '<div class="row">'
+        grid_solution += '<div class="row">'
+        grid += f'<div class="cell number">{i + 1}</div>'
+        grid_solution += f'<div class="cell number">{i + 1}</div>'
+        for j, c in enumerate(row, start=0):
+            grid += f'<div class="cell">{c}</div>'
+            needs_to_be_colored, index = need_to_be_colored(i,j)
+            if needs_to_be_colored:        
+                grid_solution += f'<div class="cell selected-{str(index)}">{c}</div>'
+            else:
+                grid_solution += f'<div class="cell">{c}</div>'
+        grid += '</div>'
+        grid_solution += '</div>'           
+
+    words = w.split(",")
+    words_amount = len(words)
+    words_per_column = int(words_amount / 3)
+    column1 = ""
+    for word in words[0:words_per_column]:
+        column1 += f'<div class="word-item">{word}</div>'
+
+    column2 = ""
+    for word in words[words_per_column:2*words_per_column]:
+        column2 += f'<div class="word-item">{word}</div>'
+
+    column3 = ""
+    for word in words[2*words_per_column:]:
+        column3 += f'<div class="word-item">{word}</div>'
+
+    words_per_column = int(words_amount / 3)
+    solution_column1 = ""
+    for word in words[0:words_per_column]:
+        solution_column1 += f'<div class="word-item"><p>{word.strip()}</p><span>{get_answer_key(word.strip())}</span></div>'
+
+    solution_column2 = ""
+    for word in words[words_per_column:2*words_per_column]:
+        solution_column2 += f'<div class="word-item"><p>{word.strip()}</p><span>{get_answer_key(word.strip())}</span></div>'
+        
+    solution_column3 = ""
+    for word in words[2*words_per_column:]:
+        solution_column3 += f'<div class="word-item"><p>{word.strip()}</p><span>{get_answer_key(word.strip())}</span></div>'
+
+    html_blank_template = html_template.replace("CATEGORYPLACEHOLDER", category).replace("GRIDPLACEHOLDER", grid).replace("COLUMN1PLACEHOLDER", column1).replace("COLUMN2PLACEHOLDER", column2).replace("COLUMN3PLACEHOLDER", column3).replace("NUMBERPLACEHOLDER", str(page))
+    html_sol_template = html_solution_template.replace("CATEGORYPLACEHOLDER", category).replace("GRIDPLACEHOLDER", grid_solution).replace("COLUMN1PLACEHOLDER", solution_column1).replace("COLUMN2PLACEHOLDER", solution_column2).replace("COLUMN3PLACEHOLDER", solution_column3).replace("NUMBERPLACEHOLDER", str(page))
+                
+    with open(os.path.join(category_name, "output", f"{page} - {html_file_name}"), 'w') as file:
+        file.write(html_blank_template)
+            
+    with open(os.path.join(category_name, "output", f"{page} - {html_result_file_name}"), 'w') as file:
+        file.write(html_sol_template)
 
 category_name = "test"
 html_file_name = "puzzle.html"
 html_result_file_name = "puzzle_solved.html"
 words_files = glob.glob(os.path.join(category_name,"words","*.*"))
 
-# Remove duplicates per file
-for file in words_files:
-    filter_and_deduplicate_words(file, os.path.join(category_name, "formatted_words", os.path.basename(file)))
-formatted_words_files = glob.glob(os.path.join(category_name,"formatted_words","*.*"))
-
-
-html_template = open('template.html', 'r').read()
-html_solution_template = open('template_solution.html', 'r').read()
 
 if __name__ == "__main__":
+
+    # Remove duplicates per file
+    for file in words_files:
+        filter_and_deduplicate_words(file, os.path.join(category_name, "formatted_words", os.path.basename(file)))
+    formatted_words_files = glob.glob(os.path.join(category_name,"formatted_words","*.*"))
+
 
     page = 0
     for words_file in formatted_words_files:
@@ -228,69 +291,10 @@ if __name__ == "__main__":
                         break  
 
                 page += 1
-                grid = ""
-                grid_solution = ""            
-
-                grid += '<div class="row"><div class="cell number">&nbsp;</div>'
-                grid_solution += '<div class="row"><div class="cell number">&nbsp;</div>'
-                for i in range(15):
-                    grid += F'<div class="cell number">{i + 1}</div>'
-                    grid_solution += f'<div class="cell number">{i + 1}</div>'
-                grid += '</div>'
-                grid_solution += '</div>'
-                for i, row in enumerate(puzzle.cropped_puzzle, start=0):
-                    grid += '<div class="row">'
-                    grid_solution += '<div class="row">'
-                    grid += f'<div class="cell number">{i + 1}</div>'
-                    grid_solution += f'<div class="cell number">{i + 1}</div>'
-                    for j, c in enumerate(row, start=0):
-                        grid += f'<div class="cell">{c}</div>'
-                        needs_to_be_colored, index = need_to_be_colored(i,j)
-                        if needs_to_be_colored:        
-                            grid_solution += f'<div class="cell selected-{str(index)}">{c}</div>'
-                        else:
-                            grid_solution += f'<div class="cell">{c}</div>'
-                    grid += '</div>'
-                    grid_solution += '</div>'           
-
-                words = w.split(",")
-                words_amount = len(words)
-                words_per_column = int(words_amount / 3)
-                column1 = ""
-                for word in words[0:words_per_column]:
-                    column1 += f'<div class="word-item">{word}</div>'
-
-                column2 = ""
-                for word in words[words_per_column:2*words_per_column]:
-                    column2 += f'<div class="word-item">{word}</div>'
-
-                column3 = ""
-                for word in words[2*words_per_column:]:
-                    column3 += f'<div class="word-item">{word}</div>'
-
-                words_per_column = int(words_amount / 3)
-                solution_column1 = ""
-                for word in words[0:words_per_column]:
-                    solution_column1 += f'<div class="word-item"><p>{word.strip()}</p><span>{get_answer_key(word.strip())}</span></div>'
-
-                solution_column2 = ""
-                for word in words[words_per_column:2*words_per_column]:
-                    solution_column2 += f'<div class="word-item"><p>{word.strip()}</p><span>{get_answer_key(word.strip())}</span></div>'
-                    
-                solution_column3 = ""
-                for word in words[2*words_per_column:]:
-                    solution_column3 += f'<div class="word-item"><p>{word.strip()}</p><span>{get_answer_key(word.strip())}</span></div>'
-
-                html_blank_template = html_template.replace("CATEGORYPLACEHOLDER", category).replace("GRIDPLACEHOLDER", grid).replace("COLUMN1PLACEHOLDER", column1).replace("COLUMN2PLACEHOLDER", column2).replace("COLUMN3PLACEHOLDER", column3).replace("NUMBERPLACEHOLDER", str(page))
-                html_sol_template = html_solution_template.replace("CATEGORYPLACEHOLDER", category).replace("GRIDPLACEHOLDER", grid_solution).replace("COLUMN1PLACEHOLDER", solution_column1).replace("COLUMN2PLACEHOLDER", solution_column2).replace("COLUMN3PLACEHOLDER", solution_column3).replace("NUMBERPLACEHOLDER", str(page))
-                            
-                with open(os.path.join(category_name, "output", f"{page} - {html_file_name}"), 'w') as file:
-                    file.write(html_blank_template)
-                        
-                with open(os.path.join(category_name, "output", f"{page} - {html_result_file_name}"), 'w') as file:
-                    file.write(html_sol_template)
-
-                if(current_word_number + 9 > words_len):
+                if(current_word_number + 9 < words_len):
+                    create_single_page(page)
+                else:
+                    print(f"Not enough words left in {category} the create entire page")
                     break
 
 
