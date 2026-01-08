@@ -28,7 +28,7 @@ def convert_html_to_pdf(html_file):
             'name': '6x9',
             'width': '6in',
             'height': '9in',
-            'file': f".\cars\output\{prefix}_6x9.pdf"
+            'file': os.path.join("fishing","output",f"{prefix}_6x9.pdf")
         },
         # {
         #     'name': '8.5x11',
@@ -120,7 +120,7 @@ def convert_non_puzzles(html_file, output_file):
 
 if __name__ == "__main__":
 
-    category_name = "cars"
+    category_name = "fishing"
 
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = []
@@ -128,8 +128,8 @@ if __name__ == "__main__":
             results.append(executor.submit(convert_html_to_pdf, os.path.join(category_name, "output", f"{i+1} - puzzle.html")))
             results.append(executor.submit(convert_html_to_pdf, os.path.join(category_name, "output", f"{i+1} - puzzle_solved.html")))
         
-        # for f in concurrent.futures.as_completed(results):
-        #     print(f.result())
+        for f in concurrent.futures.as_completed(results):
+            print(f.result())
 
 
     convert_non_puzzles(os.path.join(category_name, "template_intro.html"), os.path.join(category_name, "template_intro.pdf"))

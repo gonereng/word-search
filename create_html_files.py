@@ -67,7 +67,7 @@ def get_answer_key(word):
             value += f"Start ({str(start_col)}:{str(start_row)}) End ({str(end_col)}:{str(end_row)})"
     return value
 
-category_name = "cars"
+category_name = "fishing"
 html_file_name = "puzzle.html"
 html_result_file_name = "puzzle_solved.html"
 words_files = glob.glob(os.path.join(category_name,"words","*.md"))
