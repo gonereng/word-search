@@ -4,7 +4,7 @@ import re
 import glob
 from pathlib import Path
 from word_search_generator import WordSearch
-from weasyprint import HTML, CSS
+# from weasyprint import HTML, CSS
 from multiprocessing import Process
 
 
@@ -67,13 +67,15 @@ def get_answer_key(word):
             value += f"Start ({str(start_col)}:{str(start_row)}) End ({str(end_col)}:{str(end_row)})"
     return value
 
-category_name = "fishing"
+
+
+category_name = "test"
 html_file_name = "puzzle.html"
 html_result_file_name = "puzzle_solved.html"
-words_files = glob.glob(os.path.join(category_name,"words","*.md"))
+words_files = glob.glob(os.path.join(category_name,"words","*.*"))
 for file in words_files:
     filter_and_deduplicate_words(file, os.path.join(category_name, "formatted_words", os.path.basename(file)))
-formatted_words_files = glob.glob(os.path.join(category_name,"formatted_words","*.md"))
+formatted_words_files = glob.glob(os.path.join(category_name,"formatted_words","*.*"))
 
 
 html_template = open('template.html', 'r').read()
@@ -83,6 +85,35 @@ html_solution_template = open('template_solution.html', 'r').read()
 page = 0
 for words_file in formatted_words_files:
     category = os.path.splitext(os.path.basename(words_file))[0]
+
+
+    with open("./test/words/words.txt") as file:
+    # reads all files into list
+        allWords = [line.rstrip() for line in file]
+        i = 0
+        words_len = len(allWords) 
+        while(i <= words_len):
+
+            words = ",".join(allWords[i:i+9])
+            i += 9
+
+            puzzle = WordSearch(words)
+            puzzle.size = 15
+            puzzle.directions = "E,S,NE,SE"
+            # Read in the CSV file
+            if (len(puzzle.placed_words.items) != len(puzzle.words.items)):
+                unplaced_word = puzzle.unplaced_words.items[0].text.title()
+                next_word = allWords[i]
+                print(f"Could not place {unplaced_word}, replacing with {next_word}")
+                i+=1
+                words = words.replace(unplaced_word, next_word)
+                puzzle.remove_words(puzzle.unplaced_words.items[0].text)
+                puzzle.add_words(next_word)
+            if(i + 9 > words_len):
+                break
+
+
+    
 
     with open(words_file) as file:
         allWords = [line.rstrip() for line in file]
@@ -97,7 +128,10 @@ for words_file in formatted_words_files:
             # Read in the CSV file
             if (len(puzzle.placed_words.items) != len(puzzle.words.items)):
                 print(f"{p} could not be placed, skipping...")
-                continue
+                unplaced_word = puzzle.unplaced_words.items[0].text.title()
+                puzzle.remove_words(puzzle.unplaced_words.items[0].text)
+                w = w.replace(unplaced_word, "Testing")
+                puzzle.add_words("Testing")
             page += 1
             grid = ""
             grid_solution = ""            
