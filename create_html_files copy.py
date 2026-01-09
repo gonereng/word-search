@@ -4,7 +4,6 @@ import re
 import glob
 from pathlib import Path
 from word_search_generator import WordSearch
-# from weasyprint import HTML, CSS
 from multiprocessing import Process
 import concurrent.futures
 from pypdf import PdfWriter
@@ -201,7 +200,7 @@ def create_single_page(page):
             grid += f'<div class="cell">{c}</div>'
             needs_to_be_colored, index = need_to_be_colored(i,j)
             if needs_to_be_colored:        
-                grid_solution += f'<div class="cell selected-{str(index)}">{c}</div>'
+                grid_solution += f'<div class="cell selected">{c}</div>'
             else:
                 grid_solution += f'<div class="cell">{c}</div>'
         grid += '</div>'
@@ -235,8 +234,8 @@ def create_single_page(page):
     for word in words[2*words_per_column:]:
         solution_column3 += f'<div class="word-item"><p>{word.strip()}</p><span>{get_answer_key(word.strip())}</span></div>'
 
-    html_blank_template = html_template.replace("CATEGORYPLACEHOLDER", category).replace("GRIDPLACEHOLDER", grid).replace("COLUMN1PLACEHOLDER", column1).replace("COLUMN2PLACEHOLDER", column2).replace("COLUMN3PLACEHOLDER", column3).replace("NUMBERPLACEHOLDER", str(page))
-    html_sol_template = html_solution_template.replace("CATEGORYPLACEHOLDER", category).replace("GRIDPLACEHOLDER", grid_solution).replace("COLUMN1PLACEHOLDER", solution_column1).replace("COLUMN2PLACEHOLDER", solution_column2).replace("COLUMN3PLACEHOLDER", solution_column3).replace("NUMBERPLACEHOLDER", str(page))
+    html_blank_template = html_template.replace("CATEGORYPLACEHOLDER", "bible").replace("GRIDPLACEHOLDER", grid).replace("COLUMN1PLACEHOLDER", column1).replace("COLUMN2PLACEHOLDER", column2).replace("COLUMN3PLACEHOLDER", column3).replace("NUMBERPLACEHOLDER", str(page))
+    html_sol_template = html_solution_template.replace("CATEGORYPLACEHOLDER", "bible").replace("GRIDPLACEHOLDER", grid_solution).replace("COLUMN1PLACEHOLDER", solution_column1).replace("COLUMN2PLACEHOLDER", solution_column2).replace("COLUMN3PLACEHOLDER", solution_column3).replace("NUMBERPLACEHOLDER", str(page))
                 
     with open(os.path.join(category_name, "output", f"{page} - {html_file_name}"), 'w') as file:
         file.write(html_blank_template)
@@ -255,126 +254,71 @@ def initialize(category_name):
         filter_and_deduplicate_words(file, os.path.join(category_name, "formatted_words", os.path.basename(file)))
     return glob.glob(os.path.join(category_name,"formatted_words","*.*"))
 
-category_name = "test"
+category_name = "bible"
 html_file_name = "puzzle.html"
 html_result_file_name = "puzzle_solved.html"
-words_files = glob.glob(os.path.join(category_name,"words","*.*"))
-
+words_file = "bible_words.txt"
+unique_words_file = "unique_bible_words.txt"
+words_per_page = 18
 
 if __name__ == "__main__":
-
-    
-    formatted_words_files = initialize(category_name)
-
     page = 0
-    for words_file in formatted_words_files:
-        category = os.path.splitext(os.path.basename(words_file))[0]
-
-        with open(words_file) as file:
+    filter_and_deduplicate_words(words_file, unique_words_file)
+    for unique_words_file in ["unique_bible_words.txt", "unique_bible_words_books.txt", "unique_bible_words_fruits.txt"]:
+        with open(unique_words_file) as file:
+            print(unique_words_file)
         # reads all files into list
             allWords = [line.rstrip() for line in file]
             current_word_number = 0
             words_len = len(allWords) 
-            while(current_word_number <= words_len):
+            total_puzzles = words_len // words_per_page
+            sorted_words = sorted(allWords, key=len, reverse=True)
 
-                w = ",".join(allWords[current_word_number:current_word_number+9])
-                current_word_number += 9
+            rest_words = sorted_words[words_per_page*total_puzzles:]
+            sorted_words = sorted_words[:words_per_page*total_puzzles]
+            shift = 0
+            
+            while(current_word_number < words_len):
+                current_words = sorted_words[shift::total_puzzles]
+                shift += 1
+
+                print(f"Page: {page} - Total puzzles:  {total_puzzles} - Current Words: {len(current_words)} - Sorted Words: {len(sorted_words)}")
+
+                w = ",".join(current_words)
+                current_word_number += words_per_page
 
                 puzzle = WordSearch(w)
                 puzzle.size = 15
                 puzzle.directions = "E,S,NE,SE"
                 # Read in the CSV file
+                page_can_be_created = True
                 while (len(puzzle.placed_words.items) < len(puzzle.words.items)):
                     if current_word_number < words_len - 1:
                         for unplaced_word in puzzle.unplaced_words.items:
+                            if(len(rest_words)) == 0:
+                                page_can_be_created = False
+                                print("No swap word available")
+                                break
                             unplaced_word_text = unplaced_word.text.title()
-                            next_word = allWords[current_word_number]
+                            next_word = rest_words[0]
+                            del rest_words[0]
                             print(f"Could not place {unplaced_word_text}, replacing with {next_word}")
                             current_word_number+=1
                             w = w.replace(unplaced_word_text, next_word)
                             puzzle.remove_words(unplaced_word_text)
                             puzzle.add_words(next_word)
+                        if not page_can_be_created: break
                     else:
-                        print(f"No next word available in {category}, breaking out")
+                        print(f"No next word available in bible, breaking out")
                         break  
-
-                page += 1
-                if(current_word_number + 9 < words_len):
+                
+                if(page_can_be_created):
+                    page += 1
                     create_single_page(page)
-                else:
-                    print(f"Not enough words left in {category} the create entire page")
+                if(current_word_number > words_len):
+                    print(f"Not enough words left in bible the create entire page")
+                    break
+                if page % 10 == 0:
+                    print(f"10 pages created, breaking out")
                     break
 
-
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        results = []
-        for i in range(60):
-            results.append(executor.submit(convert_html_to_pdf, os.path.join(category_name, "output", f"{i+1} - puzzle.html")))
-            results.append(executor.submit(convert_html_to_pdf, os.path.join(category_name, "output", f"{i+1} - puzzle_solved.html")))
-        
-        for f in concurrent.futures.as_completed(results):
-            print(f.result())
-
-
-        convert_non_puzzles(os.path.join(category_name, "template_intro.html"), os.path.join(category_name, "template_intro.pdf"))
-        convert_non_puzzles(os.path.join(category_name, "template_answer_description.html"), os.path.join(category_name, "template_answer_description.pdf"))
-
-        pdf_writer = PdfWriter()
-
-        files = [f for f in glob.glob(os.path.join(category_name, "output", "./IT/*6x9.pdf"))]
-
-        #Add the intro
-
-        pdf_path = Path(os.path.join(category_name, "template_intro.pdf"))
-        pdf_writer.append(str(pdf_path))
-        pdf_writer.add_blank_page()
-
-        # Add each PDF to the writer
-        for i in range(60):
-            pdf_file = os.path.join(category_name, "output", f"{i+1} - puzzle_6x9.pdf")
-            pdf_path = Path(pdf_file)
-            
-            if not pdf_path.exists():
-                print(f"Warning: File '{pdf_file}' not found. Skipping...")
-                continue
-            
-            print(f"Adding: {pdf_file}")
-            
-            try:
-                # Append entire PDF
-                pdf_writer.append(str(pdf_path))
-            except Exception as e:
-                print(f"Error adding {pdf_file}: {e}")
-                continue
-
-        pdf_path = Path(os.path.join(category_name, "template_answer_description.pdf"))
-        pdf_writer.append(str(pdf_path))
-        pdf_writer.add_blank_page()
-
-        for i in range(60):
-            pdf_file = os.path.join(category_name, "output", f"{i+1} - puzzle_solved_6x9.pdf")
-            pdf_path = Path(pdf_file)
-            
-            if not pdf_path.exists():
-                print(f"Warning: File '{pdf_file}' not found. Skipping...")
-                continue
-            
-            print(f"Adding: {pdf_file}")
-            
-            try:
-                # Append entire PDF
-                pdf_writer.append(str(pdf_path))
-            except Exception as e:
-                print(f"Error adding {pdf_file}: {e}")
-                continue
-
-        # Write combined PDF
-        output_file = os.path.join(category_name, "finished", f"Complete_6x9_{category_name}.pdf") 
-        try:
-            with open(output_file, 'wb') as output:
-                pdf_writer.write(output)
-            print(f"\n✓ Success! Combined PDF saved as: {output_file}")
-            print(f"  Total pages: {len(pdf_writer.pages)}")
-        except Exception as e:
-            print(f"Error writing output file: {e}")
-            sys.exit(1)

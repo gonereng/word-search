@@ -1,129 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Word Search Grid</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-        .container {
-            padding: .375in;
-            max-width: 6in;
-            width: 6in;
-            margin: 0 auto;
-            max-height: 9in;
-            overflow: hidden;
-        }
+      .container {
+        padding: 0.375in;
+        max-width: 6in;
+        width: 6in;
+        margin: 0 auto;
+        max-height: 9in;
+        /* overflow: hidden; */
+      }
 
-        
+      .category {
+        text-align: center;
+        margin-bottom: 12px;
+        font-weight: bold;
+      }
 
-        .category {
-            text-align: center;
-            margin-bottom: 12px;
-            font-weight: bold;
-        }
+      h1 {
+        text-align: center;
+        color: #000;
+        margin-bottom: 12px;
+        font-size: 28px;
+        font-weight: bold;
+      }
 
-        h1 {
-            text-align: center;
-            color: #000;
-            margin-bottom: 12px;
-            font-size: 28px;
-            font-weight: bold;
-        }
+      .grid {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        margin-bottom: 15px;
+        border: 2px solid #000;
+      }
 
-        .grid {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            margin-bottom: 15px;
-            border: 2px solid #000;
-        }
+      .row {
+        display: flex;
+      }
 
-        .row {
-            display: flex;
-        }
+      .cell {
+        display: flex;
+        flex: 1;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        border: 1px solid #000;
+        font-size: 16px;
+        font-weight: bold;
+        color: #000;
+        padding: 4px 0;
+      }
 
-        .cell {
-            display: flex;
-            flex: 1;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            border: 1px solid #000;
-            font-size: 16px;
-            font-weight: bold;
-            color: #000;
-            padding: 4px 0;
-        }
+      .cell.selected {
+        background: #ccc;
+      }
 
-        .cell.selected {
-            background: #ccc;
-        }
+      .cell.number {
+        font-size: 14px;
+        color: #aaa;
+      }
 
-        .cell.number {
-            font-size: 14px;
-            color: #aaa;
-        }
+      .words-container {
+        display: flex;
+        gap: 15px;
+        margin-top: 15px;
+        justify-content: space-between;
+      }
 
-        .words-container {
-            display: flex;
-            gap: 15px;
-            margin-top: 15px;
-            justify-content: space-between;
-        }
+      .word-column {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
 
-        .word-column {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+      .word-item {
+        padding: 6px 8px;
+        background: white;
+        border: 1px solid #000;
+        font-size: 13px;
+        font-weight: 600;
+        color: #000;
+        text-align: center;
+        text-transform: uppercase;
+      }
 
-        .word-item {
-            padding: 6px 8px;
-            background: white;
-            border: 1px solid #000;
-            font-size: 13px;
-            font-weight: 600;
-            color: #000;
-            text-align: center;
-            text-transform: uppercase;
+      /* Print styles */
+      @media print {
+        @page {
+          size: 6in 9in;
+          margin: 0;
+          /* padding-left: 0.127in; */
         }
-
-        /* Print styles */
-        @media print {
-            @page {
-                size: 6in 9in;
-                margin: 0;
-                /* padding-left: 0.127in; */
-            }            
-        }
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1>Puzzle Nr. NUMBERPLACEHOLDER</h1>
-        <p class="category">Category: CATEGORYPLACEHOLDER</p>
-        <div class="grid">
-        GRIDPLACEHOLDER
-        </div>
-        <div class="words-container">
-            <div class="word-column">COLUMN1PLACEHOLDER</div>
-            <div class="word-column">COLUMN2PLACEHOLDER</div>
-            <div class="word-column">COLUMN3PLACEHOLDER</div>
-        </div>
+      <h1>Puzzle Nr. NUMBERPLACEHOLDER</h1>
+      <p class="category">Category: CATEGORYPLACEHOLDER</p>
+      <div class="grid">GRIDPLACEHOLDER</div>
+      <div class="words-container">
+        <div class="word-column">COLUMN1PLACEHOLDER</div>
+        <div class="word-column">COLUMN2PLACEHOLDER</div>
+        <div class="word-column">COLUMN3PLACEHOLDER</div>
+      </div>
     </div>
-</body>
+  </body>
 </html>

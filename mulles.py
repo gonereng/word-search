@@ -1,6 +1,6 @@
 from pathlib import Path
 
-category_name = "fishing"
+category_name = "bible"
 
 Path(f"./{category_name}/finished").mkdir(parents=True, exist_ok=True)
 Path(f"./{category_name}/words").mkdir(parents=True, exist_ok=True)
