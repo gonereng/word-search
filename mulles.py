@@ -1,8 +1,1 @@
-from pathlib import Path
-
-category_name = "fishing"
-
-Path(f"./{category_name}/finished").mkdir(parents=True, exist_ok=True)
-Path(f"./{category_name}/words").mkdir(parents=True, exist_ok=True)
-Path(f"./{category_name}/formatted_words").mkdir(parents=True, exist_ok=True)
-Path(f"./{category_name}/output").mkdir(parents=True, exist_ok=True)
+words = "Espresso, Americano, Cappuccino, Latte, Macchiato, Flat White, Cortado, Lungo, Ristretto, Affogato, Mocha, Piccolo, Irish Coffee, Turkish Coffee, Vietnamese Coffee, Greek Coffee, Cold Brew, Iced Coffee, Nitro Coffee, Bulletproof Coffee, Dirty Chai, Lungo Blanco, Cafe Noisette, Galao, Red Eye, Borgia, Café au Lait, Café Bombón, Café de Olla, Gibraltar, Breve, Shot, Double, Triple, Lungo Blanco, Lungo, Lungo Blanco, Lungo, Lungo, Lungo, Lungo Blanco, Lungo, Lungo Blanco, Lungo, Lungo Blanco, Lungo, Lungo, Lungo, Lungo Blanco, Lungo, Lungo, Lungo, Lungo, Lungo Blanco, Lungo, Lungo Blanco, Lungo"

@@ -4,7 +4,7 @@ import re
 import glob
 from pathlib import Path
 from word_search_generator import WordSearch
-# from weasyprint import HTML, CSS
+from weasyprint import HTML, CSS
 from multiprocessing import Process
 import concurrent.futures
 from pypdf import PdfWriter
@@ -87,7 +87,7 @@ def convert_html_to_pdf(html_file):
             'name': '6x9',
             'width': '6in',
             'height': '9in',
-            'file': os.path.join("fishing","output",f"{prefix}_6x9.pdf")
+            'file': os.path.join(category_name,"output",f"{prefix}_6x9.pdf")
         },
         # {
         #     'name': '8.5x11',
@@ -245,25 +245,77 @@ def create_single_page(page):
         file.write(html_sol_template)
 
 def initialize(category_name):
-    Path(f"./{category_name}/finished").mkdir(parents=True, exist_ok=True)
-    Path(f"./{category_name}/words").mkdir(parents=True, exist_ok=True)
-    Path(f"./{category_name}/formatted_words").mkdir(parents=True, exist_ok=True)
-    Path(f"./{category_name}/output").mkdir(parents=True, exist_ok=True)
-
     # Remove duplicates per file
+    words_files = glob.glob(os.path.join(category_name,"words","*.*"))
+
     for file in words_files:
         filter_and_deduplicate_words(file, os.path.join(category_name, "formatted_words", os.path.basename(file)))
     return glob.glob(os.path.join(category_name,"formatted_words","*.*"))
 
-category_name = "test"
+def extract_categories_to_files(input_file, folder):    
+    try:
+        with open(input_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+        
+        # Split content by category headers
+        # Pattern matches "Category:" (case-insensitive) followed by the category name
+        category_pattern = r'(?i)category:(.+?)(?=\n)'
+        
+        # Find all category positions
+        matches = list(re.finditer(category_pattern, content))
+        
+        if not matches:
+            print("No categories found in the file.")
+            return
+        
+        # Process each category
+        for i, match in enumerate(matches):
+            category_name = match.group(1).strip()
+            start_pos = match.end()
+            
+            # Determine end position (start of next category or end of file)
+            end_pos = matches[i + 1].start() if i + 1 < len(matches) else len(content)
+            
+            # Extract words for this category
+            category_content = content[start_pos:end_pos].strip()
+            
+            # Split into lines and filter out empty lines
+            words = [line.strip() for line in category_content.split('\n') if line.strip()]
+            
+            # Create filename from category name (sanitize for filesystem)
+            filename = re.sub(r'[^\w\s-]', '', category_name).strip()
+            # filename = re.sub(r'[-\s]+', '_', filename)
+            filename = os.path.join(folder, "words", f"{filename}.txt")
+            
+            # Write words to file
+            with open(filename, 'w', encoding='utf-8') as out_file:
+                for word in words:
+                    out_file.write(word + '\n')
+            
+            print(f"Created '{filename}' with {len(words)} words")
+        
+        print(f"\nSuccessfully processed {len(matches)} categories")
+        
+    except FileNotFoundError:
+        print(f"Error: File '{input_file}' not found.")
+    except Exception as e:
+        print(f"Error: {e}")
+
+
+category_name = "food"
 html_file_name = "puzzle.html"
 html_result_file_name = "puzzle_solved.html"
-words_files = glob.glob(os.path.join(category_name,"words","*.*"))
 
 
 if __name__ == "__main__":
 
+    Path(f"./{category_name}/finished").mkdir(parents=True, exist_ok=True)
+    Path(f"./{category_name}/words").mkdir(parents=True, exist_ok=True)
+    Path(f"./{category_name}/formatted_words").mkdir(parents=True, exist_ok=True)
+    Path(f"./{category_name}/output").mkdir(parents=True, exist_ok=True)
     
+    extract_categories_to_files("words.txt", category_name)
+
     formatted_words_files = initialize(category_name)
 
     page = 0
@@ -296,85 +348,85 @@ if __name__ == "__main__":
                             puzzle.add_words(next_word)
                     else:
                         print(f"No next word available in {category}, breaking out")
-                        break  
-
-                page += 1
+                        break
+                    
                 if(current_word_number + 9 < words_len):
+                    page += 1
                     create_single_page(page)
                 else:
                     print(f"Not enough words left in {category} the create entire page")
                     break
 
-
+    # input("Press Enter to continue...")
     with concurrent.futures.ProcessPoolExecutor() as executor:
         results = []
         for i in range(60):
             results.append(executor.submit(convert_html_to_pdf, os.path.join(category_name, "output", f"{i+1} - puzzle.html")))
             results.append(executor.submit(convert_html_to_pdf, os.path.join(category_name, "output", f"{i+1} - puzzle_solved.html")))
         
-        for f in concurrent.futures.as_completed(results):
-            print(f.result())
+        # for f in concurrent.futures.as_completed(results):
+        #     print(f.result())
 
 
-        convert_non_puzzles(os.path.join(category_name, "template_intro.html"), os.path.join(category_name, "template_intro.pdf"))
-        convert_non_puzzles(os.path.join(category_name, "template_answer_description.html"), os.path.join(category_name, "template_answer_description.pdf"))
+    convert_non_puzzles(os.path.join("template_intro.html"), os.path.join(category_name, "template_intro.pdf"))
+    convert_non_puzzles(os.path.join("template_answer_description.html"), os.path.join(category_name, "template_answer_description.pdf"))
 
-        pdf_writer = PdfWriter()
+    pdf_writer = PdfWriter()
 
-        files = [f for f in glob.glob(os.path.join(category_name, "output", "./IT/*6x9.pdf"))]
+    files = [f for f in glob.glob(os.path.join(category_name, "output", "./IT/*6x9.pdf"))]
 
-        #Add the intro
+    #Add the intro
 
-        pdf_path = Path(os.path.join(category_name, "template_intro.pdf"))
-        pdf_writer.append(str(pdf_path))
-        pdf_writer.add_blank_page()
+    pdf_path = Path(os.path.join(category_name, "template_intro.pdf"))
+    pdf_writer.append(str(pdf_path))
+    pdf_writer.add_blank_page()
 
-        # Add each PDF to the writer
-        for i in range(60):
-            pdf_file = os.path.join(category_name, "output", f"{i+1} - puzzle_6x9.pdf")
-            pdf_path = Path(pdf_file)
-            
-            if not pdf_path.exists():
-                print(f"Warning: File '{pdf_file}' not found. Skipping...")
-                continue
-            
-            print(f"Adding: {pdf_file}")
-            
-            try:
-                # Append entire PDF
-                pdf_writer.append(str(pdf_path))
-            except Exception as e:
-                print(f"Error adding {pdf_file}: {e}")
-                continue
-
-        pdf_path = Path(os.path.join(category_name, "template_answer_description.pdf"))
-        pdf_writer.append(str(pdf_path))
-        pdf_writer.add_blank_page()
-
-        for i in range(60):
-            pdf_file = os.path.join(category_name, "output", f"{i+1} - puzzle_solved_6x9.pdf")
-            pdf_path = Path(pdf_file)
-            
-            if not pdf_path.exists():
-                print(f"Warning: File '{pdf_file}' not found. Skipping...")
-                continue
-            
-            print(f"Adding: {pdf_file}")
-            
-            try:
-                # Append entire PDF
-                pdf_writer.append(str(pdf_path))
-            except Exception as e:
-                print(f"Error adding {pdf_file}: {e}")
-                continue
-
-        # Write combined PDF
-        output_file = os.path.join(category_name, "finished", f"Complete_6x9_{category_name}.pdf") 
+    # Add each PDF to the writer
+    for i in range(60):
+        pdf_file = os.path.join(category_name, "output", f"{i+1} - puzzle_6x9.pdf")
+        pdf_path = Path(pdf_file)
+        
+        if not pdf_path.exists():
+            print(f"Warning: File '{pdf_file}' not found. Skipping...")
+            continue
+        
+        print(f"Adding: {pdf_file}")
+        
         try:
-            with open(output_file, 'wb') as output:
-                pdf_writer.write(output)
-            print(f"\n✓ Success! Combined PDF saved as: {output_file}")
-            print(f"  Total pages: {len(pdf_writer.pages)}")
+            # Append entire PDF
+            pdf_writer.append(str(pdf_path))
         except Exception as e:
-            print(f"Error writing output file: {e}")
-            sys.exit(1)
+            print(f"Error adding {pdf_file}: {e}")
+            continue
+
+    pdf_path = Path(os.path.join(category_name, "template_answer_description.pdf"))
+    pdf_writer.append(str(pdf_path))
+    pdf_writer.add_blank_page()
+
+    for i in range(60):
+        pdf_file = os.path.join(category_name, "output", f"{i+1} - puzzle_solved_6x9.pdf")
+        pdf_path = Path(pdf_file)
+        
+        if not pdf_path.exists():
+            print(f"Warning: File '{pdf_file}' not found. Skipping...")
+            continue
+        
+        print(f"Adding: {pdf_file}")
+        
+        try:
+            # Append entire PDF
+            pdf_writer.append(str(pdf_path))
+        except Exception as e:
+            print(f"Error adding {pdf_file}: {e}")
+            continue
+
+    # Write combined PDF
+    output_file = os.path.join(category_name, "finished", f"Complete_6x9_{category_name}.pdf") 
+    try:
+        with open(output_file, 'wb') as output:
+            pdf_writer.write(output)
+        print(f"\n✓ Success! Combined PDF saved as: {output_file}")
+        print(f"  Total pages: {len(pdf_writer.pages)}")
+    except Exception as e:
+        print(f"Error writing output file: {e}")
+        sys.exit(1)
